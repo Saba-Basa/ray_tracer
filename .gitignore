@@ -1,0 +1,20 @@
+# macOS system files
+.DS_Store
+
+# C++ build artifacts
+*.o
+*.obj
+*.a
+*.out
+
+# Build directories
+/build/
+/bin/
+/dist/
+
+# IDE or editor-specific files
+*.swp
+*.log
+.idea/
+.vscode/
+*.tmp
