@@ -7,11 +7,25 @@ namespace math{
 template<typename T>
 class Vec3: public Tuple<3, T>
 {
-public:
-    T x, y, z;
+protected:
+    // create a tuple
 
-    // Constructor
-    Vec3() = default
+
 
 
 }
+public:
+
+
+    // default constructor
+
+    // initialize a constructor with three arguments
+
+    // access element (non-const)
+
+    // access element (const version)
+
+
+} // namespace math
+
+##endif // MATH_VEC3_H
