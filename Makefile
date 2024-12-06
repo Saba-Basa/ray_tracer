@@ -9,27 +9,38 @@ BUILD_DIR = build
 BIN_DIR = bin
 
 # Targets
-TARGET = test_suite
+MAIN_TARGET = render
+TEST_TARGET = test_suite
+MAIN_SRC = $(SRC_DIR)/main.cpp
+MAIN_OBJ = $(BUILD_DIR)/main.o
 TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp)
 TEST_OBJS = $(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(TEST_SRCS))
 
-# Default target
-all: $(BIN_DIR)/$(TARGET)
+all: $(BIN_DIR)/$(MAIN_TARGET) $(BIN_DIR)/$(TEST_TARGET)
 
-# Build test executable
-$(BIN_DIR)/$(TARGET): $(TEST_OBJS)
+$(BIN_DIR)/$(MAIN_TARGET): $(MAIN_OBJ)
 	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Compile test source files
+$(BIN_DIR)/$(TEST_TARGET): $(TEST_OBJS)
+	mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/%.o: $(TEST_DIR)/%.cpp
 	mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean build artifacts
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
-# Run tests
-test: $(BIN_DIR)/$(TARGET)
-	./$(BIN_DIR)/$(TARGET)
+test: $(BIN_DIR)/$(TEST_TARGET)
+	./$(BIN_DIR)/$(TEST_TARGET)
+
+run: $(BIN_DIR)/$(MAIN_TARGET)
+	./$(BIN_DIR)/$(MAIN_TARGET)
+
+.PHONY: all clean test run
