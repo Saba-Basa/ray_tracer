@@ -15,9 +15,6 @@ namespace math{
         using reference = T&; // type for modifiable element access, allows changing values
         using const_reference = const T&; // type for read-only element access, prevents modifications
         using iterator = T*; // pointer type for traversing / modifying elements, used in range-based operations
-        using const_iterator = const T*; // pointer for read-only traversal of elements
-
-
 
         // default constructor
         Tuple() : data() {}; // initialize all elements to 0
@@ -37,13 +34,13 @@ namespace math{
          }
 
 
-         reference operator[](size_type index) {
-                 return data[index];
-             }
+        reference operator[](size_type index) {
+         return data[index];
+        }
 
-             const_reference operator[](size_type index) const {
-                 return data[index];
-             }
+        const_reference operator[](size_type index) const {
+         return data[index];
+        }
 
 
         // access element (non-const)

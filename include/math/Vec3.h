@@ -11,7 +11,7 @@ class Vec3: public Tuple<3, T>
 
 public:
     // STL type definitions
-    using value_type = T;
+    using value_type = T; // type of the elements stored in the container
     using reference = T&; // type for modifiable element access, allows changing values
     using const_reference = const T&; // type for read-only element access, prevents modifications
 
