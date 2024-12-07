@@ -8,17 +8,21 @@ TEST_DIR = test
 BUILD_DIR = build
 BIN_DIR = bin
 
+# Source files
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
+
+# Test files
+TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp)
+TEST_OBJS = $(patsubst $(TEST_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(TEST_SRCS))
+
 # Targets
 MAIN_TARGET = render
 TEST_TARGET = test_suite
-MAIN_SRC = $(SRC_DIR)/main.cpp
-MAIN_OBJ = $(BUILD_DIR)/main.o
-TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp)
-TEST_OBJS = $(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(TEST_SRCS))
 
 all: $(BIN_DIR)/$(MAIN_TARGET) $(BIN_DIR)/$(TEST_TARGET)
 
-$(BIN_DIR)/$(MAIN_TARGET): $(MAIN_OBJ)
+$(BIN_DIR)/$(MAIN_TARGET): $(OBJS)
 	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 

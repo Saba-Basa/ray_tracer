@@ -39,8 +39,10 @@ public:
     Image& operator=(Image&& other) noexcept = default;
 
     // Accessors
-    size_t getWidth() const noexcept { return width; }
-    size_t getHeight() const noexcept { return height; }
+//    size_t getWidth() const noexcept { return width; }
+//    size_t getHeight() const noexcept { return height; }
+    size_t getWidth() const { return width; }
+    size_t getHeight() const { return height; }
     size_t size() const noexcept { return pixels.size(); }
 
 

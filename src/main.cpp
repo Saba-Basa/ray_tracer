@@ -1,86 +1,94 @@
-#include "util/Color.h"
-#include "util/Image.h"
+#include "image_generator.h"
 #include <iostream>
-#include <fstream>
-#include <cmath>
+#include <string>
+#include <limits>
 
+// Helper function to get numeric input with validation
 template<typename T>
-void rt::Image<T>::savePPM(const std::string& filename) const {
-    std::ofstream ofs(filename, std::ios::binary);
-    ofs << "P6\n" << width << " " << height << "\n255\n";
-
-    for (const auto& pixel : pixels) {
-        uint8_t r = pixel.toByte(pixel.r());
-        uint8_t g = pixel.toByte(pixel.g());
-        uint8_t b = pixel.toByte(pixel.b());
-        ofs.write(reinterpret_cast<char*>(&r), 1);
-        ofs.write(reinterpret_cast<char*>(&g), 1);
-        ofs.write(reinterpret_cast<char*>(&b), 1);
+T getNumericInput(const std::string& prompt, T min_val, T max_val) {
+    T value;
+    while (true) {
+        std::cout << prompt;
+        if (std::cin >> value) {
+            if (value >= min_val && value <= max_val) {
+                break;
+            }
+            std::cout << "Value must be between " << min_val << " and " << max_val << std::endl;
+        } else {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid input. Please enter a number." << std::endl;
+        }
     }
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    return value;
 }
 
-// Function to determine if a point is in a checker based on logarithmic spiral coordinates
-bool isCheckerDroste(float x, float y, float centerX, float centerY) {
-    // Convert to polar coordinates relative to center
-    float dx = x - centerX;
-    float dy = y - centerY;
-    float radius = std::sqrt(dx * dx + dy * dy);
-    float angle = std::atan2(dy, dx);
-
-    // Logarithmic spiral parameters
-    float a = 0.1;  // Controls how tight the spiral is
-    float b = 4.0;  // Controls number of checker repetitions
-
-    // Convert to logarithmic spiral space
-    float logR = std::log(radius);
-    float spiralSpace = logR - a * angle;
-
-    // Create checker pattern in spiral space
-    float checker1 = std::fmod(spiralSpace * b, 2.0f);
-    float checker2 = std::fmod(angle * b / M_PI, 2.0f);
-
-    return (checker1 < 1.0f) != (checker2 < 1.0f);
+// Helper function to get color input
+rt::Color<rt::Float> getColorInput(const std::string& colorName) {
+    std::cout << "\nEnter " << colorName << " (values between 0.0 and 1.0):\n";
+    float r = getNumericInput<float>("Red: ", 0.0f, 1.0f);
+    float g = getNumericInput<float>("Green: ", 0.0f, 1.0f);
+    float b = getNumericInput<float>("Blue: ", 0.0f, 1.0f);
+    return rt::Color<rt::Float>(r, g, b);
 }
 
 int main() {
-    const size_t width = 800;
-    const size_t height = 800;
-    rt::Image<rt::Float> img(width, height);
+    try {
+        // Welcome message
+        std::cout << "=== Image Pattern Generator ===\n\n";
 
-    float centerX = width / 2.0f;
-    float centerY = height / 2.0f;
+        // Get image dimensions
+        std::cout << "First, let's set up the image dimensions:\n";
+        size_t width = getNumericInput<size_t>("Enter image width (100-4000): ", 100, 4000);
+        size_t height = getNumericInput<size_t>("Enter image height (100-4000): ", 100, 4000);
 
-    for (size_t y = 0; y < height; ++y) {
-        for (size_t x = 0; x < width; ++x) {
-            bool isWhite = isCheckerDroste(x, y, centerX, centerY);
+        // Create image generator
+        rt::ImageGenerator generator(width, height);
 
-            // Create a gradient based on distance from center for more depth
-            float dx = (x - centerX) / centerX;
-            float dy = (y - centerY) / centerY;
-            float distFactor = std::sqrt(dx * dx + dy * dy);
-            distFactor = std::max(0.0f, 1.0f - distFactor * 0.5f);
+        // Pattern selection
+        std::cout << "\nAvailable patterns:\n";
+        std::cout << "1. Checker pattern\n";
+        std::cout << "2. Droste pattern\n";
+        int patternChoice = getNumericInput<int>("Select pattern (1-2): ", 1, 2);
 
-            rt::Color<rt::Float> color;
-            if (isWhite) {
-                color = rt::Color<rt::Float>(
-                    1.0f * distFactor,
-                    1.0f * distFactor,
-                    1.0f * distFactor
-                );
-            } else {
-                color = rt::Color<rt::Float>(
-                    0.0f * distFactor,
-                    0.0f * distFactor,
-                    0.0f * distFactor
-                );
-            }
+        // Get colors
+        rt::Color<rt::Float> color1 = getColorInput("first color");
+        rt::Color<rt::Float> color2 = getColorInput("second color");
 
-            img.setPixel(x, y, color);
+        // Get pattern-specific parameters and generate pattern
+        if (patternChoice == 1) {
+            size_t squareSize = getNumericInput<size_t>(
+                "Enter square size (10-200): ", 10, 200);
+            generator.generateCheckerPattern(squareSize, color1, color2);
+        } else {
+            float tightness = getNumericInput<float>(
+                "Enter spiral tightness (0.01-1.0): ", 0.01f, 1.0f);
+            float repetitions = getNumericInput<float>(
+                "Enter number of repetitions (1.0-10.0): ", 1.0f, 10.0f);
+            generator.generateDrostePattern(tightness, repetitions, color1, color2);
         }
+
+        // Get output filename
+        std::string filename;
+        std::cout << "\nEnter output filename (will be saved as .ppm): ";
+        std::getline(std::cin, filename);
+        if (filename.empty()) {
+            filename = "output";
+        }
+        if (filename.substr(filename.length() - 4) != ".ppm") {
+            filename += ".ppm";
+        }
+
+        // Save the image
+        generator.setFilename(filename);
+        generator.saveImage();
+        std::cout << "\nImage saved successfully as: " << filename << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
 
-
-    img.savePPM("droste_checker.ppm");
-    std::cout << "Created Droste effect checker pattern in 'droste_checker.ppm'" << std::endl;
     return 0;
 }
