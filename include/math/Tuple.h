@@ -1,6 +1,11 @@
 #ifndef MATH_TUPLE_H
 #define MATH_TUPLE_H
 
+//Base template for fixed-size arrays
+
+/*
+ - Provides common operations for vectors/points
+*/
 
 namespace math{
 

@@ -4,6 +4,13 @@
 #include "rt.h"
 #include "util/Color.h"
 
+//Image output and manipulation
+/*
+- Stores the final rendered pixels
+- Handles image output (e.g., PPM format)
+- Manages pixel access and modification
+*/
+
 namespace rt {
 
 template<typename T>

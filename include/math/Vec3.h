@@ -2,6 +2,15 @@
 #define MATH_VEC3_H
 
 #include "math/Tuple.h"
+#include <initializer_list>
+
+// 3D vector operations
+/*
+    - Ray directions
+    - Surface normals
+    - Points in 3D space
+    - Color values (through inheritance)
+*/
 
 namespace math{
 
