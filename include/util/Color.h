@@ -12,17 +12,17 @@ template<typename T>
 class Color : public math::Vec3<T> {
 public:
     using value_type = T;
-    using reference = T&;
-    using const_reference = const T&;
+    using reference = value_type&;
+    using const_reference = const value_type&;
 
     // Inherit constructors and data member
-    using math::Vec3<T>::Vec3;
-    using math::Vec3<T>::data;
-    using math::Vec3<T>::operator=;
+    using math::Vec3<value_type>::Vec3;
+    using math::Vec3<value_type>::data;
+    using math::Vec3<value_type>::operator=;
 
     // Constructors
-    Color() : math::Vec3<T>() {}
-    Color(T r, T g, T b) : math::Vec3<T>(r, g, b) {}
+    Color() : math::Vec3<value_type>() {}
+    Color(value_type r, value_type g, value_type b) : math::Vec3<value_type>(r, g, b) {}
 
     // Accessors methods
     reference r() { return data[0]; }
@@ -34,9 +34,9 @@ public:
     const_reference b() const { return data[2]; }
 
     // Convert color to byte
-    uint8_t toByte(T v) const {
-        T clamped = std::max(T(0), std::min(T(1), v));
-        return static_cast<uint8_t>(clamped * T(255));
+    uint8_t toByte(value_type v) const {
+        value_type clamped = std::max(T(0), std::min(value_type(1), v));
+        return static_cast<uint8_t>(clamped * value_type(255));
     }
 
     // Operator overloads
@@ -47,14 +47,14 @@ public:
         return *this;
     }
 
-    Color& operator*=(T a) {
+    Color& operator*=(value_type a) {
         data[0] *= a;
         data[1] *= a;
         data[2] *= a;
         return *this;
     }
 
-    Color operator*(T a) const {
+    Color operator*(value_type a) const {
         Color result(*this);
         result *= a;
         return result;
@@ -68,8 +68,8 @@ public:
 };
 
 // Non-member operator overloads
-template<typename T>
-Color<T> operator*(T a, const Color<T>& c) {
+template<typename value_type>
+Color<value_type> operator*(value_type a, const Color<value_type>& c) {
     return c * a;
 }
 

@@ -93,6 +93,7 @@ TEST_CASE(Color_VectorOperations) {
 //    TestSuite::check(sum.g() == 0.5f, "Vector addition g");
 //    TestSuite::check(sum.b() == 0.7f, "Vector addition b");
 //    std::cout << "c1.b(): " << c1.b() << ", c2.b(): " << c2.b() << ", sum.b(): " << sum.b() << std::endl;
+    //inaccurate floating point comparison
     constexpr float epsilon = 1e-6f;
     TestSuite::check(std::abs(sum.r() - 0.3f) < epsilon, "Vector addition r");
     TestSuite::check(std::abs(sum.g() - 0.5f) < epsilon, "Vector addition g");
